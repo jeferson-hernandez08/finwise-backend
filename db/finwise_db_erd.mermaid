@@ -1,0 +1,80 @@
+erDiagram
+    USERS ||--o{ MONTHLY_INCOME : registra
+    USERS ||--o{ EXPENSES : registra
+    USERS ||--o{ DEBTS : tiene
+    USERS ||--o{ SAVINGS_GOALS : tiene
+    EXPENSE_CATEGORIES ||--o{ EXPENSES : clasifica
+    DEBTS ||--o{ EXPENSES : "paga opcionalmente"
+    DEBTS ||--o{ DEBT_PAYMENTS : registra
+    SAVINGS_GOALS ||--o{ SAVINGS_CONTRIBUTIONS : recibe
+
+    USERS {
+        int id PK
+        string email
+        string password_hash
+        string google_id
+        string full_name
+        timestamp created_at
+    }
+
+    MONTHLY_INCOME {
+        int id PK
+        int user_id FK
+        decimal amount
+        int month
+        int year
+        timestamp created_at
+    }
+
+    EXPENSE_CATEGORIES {
+        int id PK
+        string name
+    }
+
+    EXPENSES {
+        int id PK
+        int user_id FK
+        int category_id FK
+        int debt_id FK
+        string description
+        decimal amount
+        date date
+        timestamp created_at
+    }
+
+    DEBTS {
+        int id PK
+        int user_id FK
+        string name
+        decimal total_amount
+        decimal remaining_amount
+        decimal minimum_monthly_payment
+        decimal interest_rate
+        date due_date
+        timestamp created_at
+    }
+
+    DEBT_PAYMENTS {
+        int id PK
+        int debt_id FK
+        decimal amount
+        date payment_date
+    }
+
+    SAVINGS_GOALS {
+        int id PK
+        int user_id FK
+        string name
+        decimal target_amount
+        decimal current_amount
+        date deadline
+        timestamp created_at
+    }
+
+    SAVINGS_CONTRIBUTIONS {
+        int id PK
+        int savings_goal_id FK
+        decimal amount
+        date date
+        string note
+    }
