@@ -9,72 +9,72 @@ erDiagram
     SAVINGS_GOALS ||--o{ SAVINGS_CONTRIBUTIONS : recibe
 
     USERS {
-        int id PK
-        string email
-        string password_hash
-        string google_id
-        string full_name
-        timestamp created_at
+        id INT PK
+        email VARCHAR
+        password_hash VARCHAR
+        google_id VARCHAR
+        full_name VARCHAR
+        created_at TIMESTAMPSAD
     }
 
     MONTHLY_INCOME {
-        int id PK
-        int user_id FK
-        decimal amount
-        int month
-        int year
-        timestamp created_at
+        id INT PK
+        amount DECIMAL
+        month INT
+        year INT
+        created_at TIMESTAMP
+        user_id INT FK
     }
 
     EXPENSE_CATEGORIES {
-        int id PK
-        string name
+        id INT PK
+        name VARCHAR
     }
 
     EXPENSES {
-        int id PK
-        int user_id FK
-        int category_id FK
-        int debt_id FK
-        string description
-        decimal amount
-        date date
-        timestamp created_at
+        id INT PK 
+        description VARCHAR
+        amount DECIMAL
+        date DATE
+        created_at TIMESTAMP
+        user_id INT FK
+        category_id INT FK
+        debt_id INT FK
     }
 
     DEBTS {
-        int id PK
-        int user_id FK
-        string name
-        decimal total_amount
-        decimal remaining_amount
-        decimal minimum_monthly_payment
-        decimal interest_rate
-        date due_date
-        timestamp created_at
+        id INT PK
+        name VARCHAR
+        total_amount DECIMAL
+        remaining_amount DECIMAL
+        minimum_monthly_payment DECIMAL
+        interest_rate DECIMAL
+        due_date DATE
+        created_at TIMESTAMP
+        user_id INT FK
     }
 
     DEBT_PAYMENTS {
-        int id PK
-        int debt_id FK
-        decimal amount
-        date payment_date
+        id INT PK
+        amount DECIMAL
+        payment_date DATE
+        debt_id INT FK
     }
 
     SAVINGS_GOALS {
-        int id PK
-        int user_id FK
-        string name
-        decimal target_amount
-        decimal current_amount
-        date deadline
-        timestamp created_at
+        id INT PK
+        name VARCHAR
+        target_amount DECIMAL
+        current_amount DECIMAL
+        deadline DATE
+        created_at TIMESTAMP
+        user_id INT FK
     }
 
     SAVINGS_CONTRIBUTIONS {
-        int id PK
-        int savings_goal_id FK
-        decimal amount
-        date date
-        string note
+        id INT PK
+        amount DECIMAL
+        date DATE
+        note VARCHAR
+        savings_goal_id INT FK
     }
