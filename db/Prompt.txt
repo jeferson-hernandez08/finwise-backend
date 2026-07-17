@@ -1,0 +1,3 @@
+Me faltan tres tablas debts_payments, saving_goals y savings_contributions
+
+ME EQUIVOQUE EN REPETICION DE DEBTS indicar IA
