@@ -11,6 +11,13 @@ export class DebtPayment extends Document {
 
   @Prop({ required: true })
   payment_date: Date;
+
+  // Campo opcional para notas
+  @Prop()
+  note: string;
 }
 
 export const DebtPaymentSchema = SchemaFactory.createForClass(DebtPayment);
+
+// Índices para mejorar rendimiento
+DebtPaymentSchema.index({ debt_id: 1, payment_date: -1 });
