@@ -1,7 +1,7 @@
-Me faltan tres tablas debts_payments, saving_goals y savings_contributions
+Me faltan dos tablas saving_goals y savings_contributions
 
 ME EQUIVOQUE EN REPETICION DE DEBTS indicar IA
 
 CONTINUACIÓN:
-Se incia  CRUD de debts_payments quede enensayar poostman  y validar orque No viene
-id_debts fk 
+Se finaiza  CRUD de debts_payments se enensayar poostman  
+Siguients tablas saving_goals y savings_contributions
