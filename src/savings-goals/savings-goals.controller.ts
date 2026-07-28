@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { SavingsGoalsService } from './savings-goals.service';
 import { CreateSavingsGoalDto } from './dto/create-savings-goal.dto';
 import { UpdateSavingsGoalDto } from './dto/update-savings-goal.dto';
@@ -17,18 +17,24 @@ export class SavingsGoalsController {
     return this.savingsGoalsService.findAll();
   }
 
+  @Get('user/:userId')
+  findByUser(@Param('userId') userId: string) {
+    return this.savingsGoalsService.findByUser(userId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.savingsGoalsService.findOne(+id);
+    return this.savingsGoalsService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateSavingsGoalDto: UpdateSavingsGoalDto) {
-    return this.savingsGoalsService.update(+id, updateSavingsGoalDto);
+    return this.savingsGoalsService.update(id, updateSavingsGoalDto);
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: string) {
-    return this.savingsGoalsService.remove(+id);
+    return this.savingsGoalsService.remove(id);
   }
 }

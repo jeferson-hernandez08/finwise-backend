@@ -1,20 +1,41 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { SavingsGoalsController } from './savings-goals.controller';
+// src/savings-goals/savings-goals.controller.ts
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
 import { SavingsGoalsService } from './savings-goals.service';
+import { CreateSavingsGoalDto } from './dto/create-savings-goal.dto';
+import { UpdateSavingsGoalDto } from './dto/update-savings-goal.dto';
 
-describe('SavingsGoalsController', () => {
-  let controller: SavingsGoalsController;
+@Controller('savings-goals')
+export class SavingsGoalsController {
+  constructor(private readonly savingsGoalsService: SavingsGoalsService) {}
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [SavingsGoalsController],
-      providers: [SavingsGoalsService],
-    }).compile();
+  @Post()
+  create(@Body() createSavingsGoalDto: CreateSavingsGoalDto) {
+    return this.savingsGoalsService.create(createSavingsGoalDto);
+  }
 
-    controller = module.get<SavingsGoalsController>(SavingsGoalsController);
-  });
+  @Get()
+  findAll() {
+    return this.savingsGoalsService.findAll();
+  }
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-});
+  @Get('user/:userId')
+  findByUser(@Param('userId') userId: string) {
+    return this.savingsGoalsService.findByUser(userId);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.savingsGoalsService.findOne(id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateSavingsGoalDto: UpdateSavingsGoalDto) {
+    return this.savingsGoalsService.update(id, updateSavingsGoalDto);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('id') id: string) {
+    return this.savingsGoalsService.remove(id);
+  }
+}
