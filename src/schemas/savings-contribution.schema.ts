@@ -1,3 +1,4 @@
+// src/schemas/savings-contribution.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
@@ -17,3 +18,6 @@ export class SavingsContribution extends Document {
 }
 
 export const SavingsContributionSchema = SchemaFactory.createForClass(SavingsContribution);
+
+// Índices para rendimiento
+SavingsContributionSchema.index({ savings_goal_id: 1, date: -1 });
