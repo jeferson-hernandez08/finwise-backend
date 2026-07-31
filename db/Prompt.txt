@@ -3,5 +3,5 @@ Me faltan dos tablas saving_goals y savings_contributions
 ME EQUIVOQUE EN REPETICION DE DEBTS indicar IA
 
 CONTINUACIÓN:
-Se finaiza  CRUD de debts_payments se enensayar poostman  
-Siguients tablas saving_goals y savings_contributions
+Se finaiza  CRUDs de tablas, verificar CRUD de cada una. 
+Cotinuar con trello
