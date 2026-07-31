@@ -1,34 +1,40 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
 import { SavingsContributionsService } from './savings-contributions.service';
 import { CreateSavingsContributionDto } from './dto/create-savings-contribution.dto';
 import { UpdateSavingsContributionDto } from './dto/update-savings-contribution.dto';
 
 @Controller('savings-contributions')
 export class SavingsContributionsController {
-  constructor(private readonly savingsContributionsService: SavingsContributionsService) {}
+  constructor(private readonly contributionsService: SavingsContributionsService) {}
 
   @Post()
-  create(@Body() createSavingsContributionDto: CreateSavingsContributionDto) {
-    return this.savingsContributionsService.create(createSavingsContributionDto);
+  create(@Body() createDto: CreateSavingsContributionDto) {
+    return this.contributionsService.create(createDto);
   }
 
   @Get()
   findAll() {
-    return this.savingsContributionsService.findAll();
+    return this.contributionsService.findAll();
+  }
+
+  @Get('goal/:goalId')
+  findByGoal(@Param('goalId') goalId: string) {
+    return this.contributionsService.findByGoal(goalId);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.savingsContributionsService.findOne(+id);
+    return this.contributionsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSavingsContributionDto: UpdateSavingsContributionDto) {
-    return this.savingsContributionsService.update(+id, updateSavingsContributionDto);
+  update(@Param('id') id: string, @Body() updateDto: UpdateSavingsContributionDto) {
+    return this.contributionsService.update(id, updateDto);
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: string) {
-    return this.savingsContributionsService.remove(+id);
+    return this.contributionsService.remove(id);
   }
 }
