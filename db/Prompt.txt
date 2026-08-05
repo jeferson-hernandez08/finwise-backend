@@ -3,5 +3,5 @@ Me faltan dos tablas saving_goals y savings_contributions
 ME EQUIVOQUE EN REPETICION DE DEBTS indicar IA
 
 CONTINUACIÓN:
-Se finaiza  CRUDs de tablas, verificar CRUD de cada una. 
-Cotinuar con trello
+Paso 5: Implementar "Login con Google" (OAuth2), verificar CRUD de cada una. 
+Continuar con trello
