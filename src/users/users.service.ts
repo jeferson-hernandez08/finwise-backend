@@ -33,6 +33,26 @@ export class UsersService {
     return null;
   }
 
+  // Crear usuario desde Google (sin contraseña)
+  async createWithGoogle(email: string, fullName: string, googleId: string): Promise<User> {
+    const newUser = new this.userModel({
+      email,
+      full_name: fullName,
+      google_id: googleId,
+      // password_hash queda null
+    });
+    return newUser.save();
+  }
+
+  // Actualizar google_id a un usuario existente
+  async updateGoogleId(userId: string, googleId: string): Promise<User> {
+    return this.userModel.findByIdAndUpdate(
+      userId,
+      { google_id: googleId },
+      { new: true },
+    ).exec();
+  }
+
   async create(createUserDto: any): Promise<User> {
     const newUser = new this.userModel(createUserDto);
     return newUser.save();
@@ -57,4 +77,6 @@ export class UsersService {
   async remove(id: string): Promise<User> {
     return this.userModel.findByIdAndDelete(id).exec();
   }
+
+
 }
