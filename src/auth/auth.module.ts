@@ -7,6 +7,7 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './jwt.strategy';
 import { GoogleStrategy } from './google.strategy';
+import { StringValue } from 'ms';
 
 @Module({
   imports: [
@@ -16,7 +17,9 @@ import { GoogleStrategy } from './google.strategy';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: configService.get<string>('JWT_EXPIRATION') },
+        signOptions: { 
+          expiresIn: configService.get<string>('JWT_EXPIRATION') as StringValue,
+        },
       }),
       inject: [ConfigService],
     }),

@@ -8,6 +8,29 @@ import * as bcrypt from 'bcrypt';
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
+  // ========== CRUD genérico (para el controlador) ==========
+  async create(createUserDto: any): Promise<User> {
+    const newUser = new this.userModel(createUserDto);
+    return newUser.save();
+  }
+
+  async findAll(): Promise<User[]> {
+    return this.userModel.find().exec();
+  }
+
+  async findOne(id: string): Promise<User | null> {
+    return this.userModel.findById(id).exec();
+  }
+
+  async update(id: string, updateUserDto: any): Promise<User | null> {
+    return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true }).exec();
+  }
+
+  async remove(id: string): Promise<User | null> {
+    return this.userModel.findByIdAndDelete(id).exec();
+  }
+
+  // ========== Métodos específicos para autenticación ==========
   // Buscar por email (devuelve null si no existe)
   async findByEmail(email: string): Promise<User | null> {
     return this.userModel.findOne({ email }).exec();
@@ -52,20 +75,4 @@ export class UsersService {
     return null;
   }
 
-  // CRUD genérico
-  async findAll(): Promise<User[]> {
-    return this.userModel.find().exec();
-  }
-
-  async findOne(id: string): Promise<User | null> {
-    return this.userModel.findById(id).exec();
-  }
-
-  async update(id: string, updateUserDto: any): Promise<User | null> {
-    return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true }).exec();
-  }
-
-  async remove(id: string): Promise<User | null> {
-    return this.userModel.findByIdAndDelete(id).exec();
-  }
 }
