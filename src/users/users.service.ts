@@ -8,13 +8,13 @@ import * as bcrypt from 'bcrypt';
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  // Método para encontrar un usuario por email
+  // Buscar por email (devuelve null si no existe)
   async findByEmail(email: string): Promise<User | null> {
     return this.userModel.findOne({ email }).exec();
   }
 
-  // Método para crear un nuevo usuario (con contraseña hasheada)
-  async create(email: string, password: string, fullName: string): Promise<User> {
+  // Crear usuario con contraseña (para registro con email/password)
+  async createWithPassword(email: string, password: string, fullName: string): Promise<User> {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new this.userModel({
       email,
@@ -24,28 +24,18 @@ export class UsersService {
     return newUser.save();
   }
 
-  // Método para validar credenciales (usado por AuthService)
-  async validateCredentials(email: string, password: string): Promise<User | null> {
-    const user = await this.findByEmail(email);
-    if (user && await bcrypt.compare(password, user.password_hash)) {
-      return user;
-    }
-    return null;
-  }
-
   // Crear usuario desde Google (sin contraseña)
   async createWithGoogle(email: string, fullName: string, googleId: string): Promise<User> {
     const newUser = new this.userModel({
       email,
       full_name: fullName,
       google_id: googleId,
-      // password_hash queda null
     });
     return newUser.save();
   }
 
-  // Actualizar google_id a un usuario existente
-  async updateGoogleId(userId: string, googleId: string): Promise<User> {
+  // Actualizar google_id de un usuario existente
+  async updateGoogleId(userId: string, googleId: string): Promise<User | null> {
     return this.userModel.findByIdAndUpdate(
       userId,
       { google_id: googleId },
@@ -53,30 +43,29 @@ export class UsersService {
     ).exec();
   }
 
-  async create(createUserDto: any): Promise<User> {
-    const newUser = new this.userModel(createUserDto);
-    return newUser.save();
+  // Validar credenciales (para login con email/password)
+  async validateCredentials(email: string, password: string): Promise<User | null> {
+    const user = await this.findByEmail(email);
+    if (user && user.password_hash && await bcrypt.compare(password, user.password_hash)) {
+      return user;
+    }
+    return null;
   }
 
+  // CRUD genérico
   async findAll(): Promise<User[]> {
     return this.userModel.find().exec();
   }
 
-  async findOne(id: string): Promise<User> {
+  async findOne(id: string): Promise<User | null> {
     return this.userModel.findById(id).exec();
   }
 
-  async findByEmail(email: string): Promise<User> {
-    return this.userModel.findOne({ email }).exec();
-  }
-
-  async update(id: string, updateUserDto: any): Promise<User> {
+  async update(id: string, updateUserDto: any): Promise<User | null> {
     return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true }).exec();
   }
 
-  async remove(id: string): Promise<User> {
+  async remove(id: string): Promise<User | null> {
     return this.userModel.findByIdAndDelete(id).exec();
   }
-
-
 }
