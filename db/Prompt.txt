@@ -10,8 +10,7 @@ Sigo con debs:
 ✅ Siguientes módulos a actualizar
 Con este patrón claro, los siguientes módulos a actualizar son:
 
-debts (deudas) - muy similar, solo que no tiene categorías.
-debt-payments (pagos de deudas) - requiere verificar que la deuda sea del usuario.
+debt-payments (pagos de deudas) - requiere verificar que la deuda sea del usuario.  VAMOS AQUÍ
 savings-goals (objetivos de ahorro) - similar a deudas.
 savings-contributions (contribuciones) - requiere verificar que el objetivo de ahorro sea del usuario.
 monthly-incomes (ingresos mensuales) - ya lo hiciste, pero verifica que esté igual.
