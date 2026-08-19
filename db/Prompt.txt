@@ -4,8 +4,10 @@ ME EQUIVOQUE EN REPETICION DE DEBTS indicar IA
 
 CONTINUACIÓN:
 En DEEKSEEK
-Paso 5: Implementar "Login con Google" (OAuth2), verificar CRUD de cada una. 
-Continuar con trello
+Continuamos con proteccionde ruta JWT, DEEKSEEK
+🔀 Paso 4: Crear un decorador @Public() (Opcional, pero recomendado)
+Para marcar rutas públicas sin tener que repetir lógica, puedes crear un decorador personalizado:
+DEEKSEEK
 
 GoogleCloud:
 https://console.cloud.google.com/apis/credentials?project=my-project-3997-1757347849982
