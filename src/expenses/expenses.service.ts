@@ -1,3 +1,4 @@
+// src/expenses/expenses.service.ts
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -12,9 +13,12 @@ export class ExpensesService {
   constructor(
     @InjectModel(Expense.name) private expenseModel: Model<Expense>,
     @InjectModel(Debt.name) private debtModel: Model<Debt>,
-    @InjectModel(ExpenseCategory.name) private categoryModel: Model<ExpenseCategory>
+    @InjectModel(ExpenseCategory.name) private categoryModel: Model<ExpenseCategory>,
   ) {}
 
+  // ========== MÉTODOS CON FILTRO POR USUARIO ==========
+
+  // 1. Crear gasto (ya recibe user_id en el DTO)
   async create(createExpenseDto: CreateExpenseDto) {
     // Validar que la categoría exista
     const category = await this.categoryModel.findById(createExpenseDto.category_id).exec();
@@ -26,20 +30,22 @@ export class ExpensesService {
     if (createExpenseDto.debt_id) {
       const debt = await this.debtModel.findOne({
         _id: createExpenseDto.debt_id,
-        user_id: createExpenseDto.user_id
+        user_id: createExpenseDto.user_id,
       }).exec();
       if (!debt) {
         throw new BadRequestException('Deuda no encontrada o no pertenece al usuario');
       }
       if (debt.remaining_amount < createExpenseDto.amount) {
-        throw new BadRequestException('El monto del pago excede el saldo restante de la deuda');
+        throw new BadRequestException(
+          `El monto del pago (${createExpenseDto.amount}) excede el saldo restante (${debt.remaining_amount})`
+        );
       }
     }
 
     // Crear el gasto
     const newExpense = new this.expenseModel({
       ...createExpenseDto,
-      debt_id: createExpenseDto.debt_id || null
+      debt_id: createExpenseDto.debt_id || null,
     });
     const savedExpense = await newExpense.save();
 
@@ -48,66 +54,91 @@ export class ExpensesService {
       await this.debtModel.findByIdAndUpdate(
         createExpenseDto.debt_id,
         { $inc: { remaining_amount: -createExpenseDto.amount } },
-        { new: true }
+        { new: true },
       ).exec();
     }
 
     return savedExpense;
   }
 
-  async findAll() {
-    return this.expenseModel.find()
+  // 2. Listar todos los gastos de un usuario
+  async findAllByUser(userId: string) {
+    return this.expenseModel
+      .find({ user_id: userId })
       .populate('category_id')
       .populate('debt_id')
+      .sort({ date: -1 })
       .exec();
   }
 
-  async findOne(id: string) {
-    const expense = await this.expenseModel.findById(id)
+  // 3. Listar con filtro de año/mes
+  async findByUserAndDate(userId: string, year?: number, month?: number) {
+    const filter: any = { user_id: userId };
+
+    if (year && month) {
+      const startDate = new Date(year, month - 1, 1);
+      const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+      filter.date = { $gte: startDate, $lte: endDate };
+    } else if (year) {
+      const startDate = new Date(year, 0, 1);
+      const endDate = new Date(year, 11, 31, 23, 59, 59, 999);
+      filter.date = { $gte: startDate, $lte: endDate };
+    }
+
+    return this.expenseModel
+      .find(filter)
+      .populate('category_id')
+      .populate('debt_id')
+      .sort({ date: -1 })
+      .exec();
+  }
+
+  // 4. Obtener un gasto (verifica propiedad)
+  async findOneForUser(id: string, userId: string) {
+    const expense = await this.expenseModel
+      .findOne({ _id: id, user_id: userId })
       .populate('category_id')
       .populate('debt_id')
       .exec();
     if (!expense) {
-      throw new NotFoundException(`Gasto con ID ${id} no encontrado`);
+      throw new NotFoundException('Gasto no encontrado o no pertenece al usuario');
     }
     return expense;
   }
 
-  // Filtrar por usuario y opcionalmente por mes/año
-  async findByUserAndDate(user_id: string, year?: number, month?: number) {
-    const filter: any = { user_id };
-    if (year && month) {
-      const start = new Date(year, month - 1, 1);
-      const end = new Date(year, month, 0);
-      filter.date = { $gte: start, $lte: end };
-    }
-    return this.expenseModel.find(filter)
-      .populate('category_id')
-      .populate('debt_id')
+  // 5. Actualizar (verifica propiedad)
+  async updateForUser(id: string, updateDto: UpdateExpenseDto, userId: string) {
+    // No permitir cambiar user_id o debt_id por simplicidad (o gestionar actualización de deuda)
+    // Puedes permitir cambiar campos básicos (description, amount, date, category_id)
+    const expense = await this.expenseModel
+      .findOneAndUpdate(
+        { _id: id, user_id: userId },
+        updateDto,
+        { new: true, runValidators: true },
+      )
       .exec();
-  }
-
-  async update(id: string, updateExpenseDto: UpdateExpenseDto) {
-    // No permitir cambiar debt_id o user_id por simplicidad (o gestionar actualización de deuda)
-    // Podrías implementar lógica más compleja, pero por ahora solo actualizamos campos básicos
-    const updated = await this.expenseModel.findByIdAndUpdate(
-      id,
-      updateExpenseDto,
-      { new: true, runValidators: true }
-    ).exec();
-    if (!updated) {
-      throw new NotFoundException(`Gasto con ID ${id} no encontrado`);
-    }
-    return updated;
-  }
-
-  async remove(id: string) {
-    const expense = await this.expenseModel.findByIdAndDelete(id).exec();
     if (!expense) {
-      throw new NotFoundException(`Gasto con ID ${id} no encontrado`);
+      throw new NotFoundException('Gasto no encontrado o no pertenece al usuario');
     }
-    // Si el gasto tenía deuda, podríamos revertir el remaining_amount? 
+    return expense;
+  }
+
+  // 6. Eliminar (verifica propiedad)
+  async removeForUser(id: string, userId: string) {
+    const expense = await this.expenseModel
+      .findOneAndDelete({ _id: id, user_id: userId })
+      .exec();
+    if (!expense) {
+      throw new NotFoundException('Gasto no encontrado o no pertenece al usuario');
+    }
+    // Si el gasto tenía deuda, podríamos revertir el remaining_amount?
     // Depende de la lógica de negocio. Por ahora no lo revertimos.
+    // Si quieres revertir, descomenta:
+    // if (expense.debt_id) {
+    //   await this.debtModel.findByIdAndUpdate(expense.debt_id, {
+    //     $inc: { remaining_amount: expense.amount }
+    //   }).exec();
+    // }
     return expense;
   }
 }
