@@ -75,6 +75,7 @@ CREATE TABLE debt_payments (
     debt_id INT NOT NULL,
     amount DECIMAL(12,2) NOT NULL CHECK (amount >= 0),
     payment_date DATE NOT NULL,
+    note VARCHAR(255),
     FOREIGN KEY (debt_id) REFERENCES debts(id) ON DELETE CASCADE
 );
 
