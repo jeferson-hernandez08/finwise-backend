@@ -2,6 +2,7 @@ import { Body, Controller, Post, Get, UseGuards, Req, Res, HttpCode, HttpStatus 
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
+import { Public } from 'src/decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -11,6 +12,7 @@ export class AuthController {
   ) {}
 
   // 1. Login con email y contraseña
+  @Public()     // Ruta pública
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async signIn(@Body() signInDto: { email: string; password: string }) {
@@ -18,6 +20,7 @@ export class AuthController {
   }
 
   // 2. Iniciar flujo de Google OAuth
+  @Public()     // Ruta pública
   @Get('google')
   @UseGuards(AuthGuard('google'))
   async googleAuth() {
@@ -25,6 +28,7 @@ export class AuthController {
   }
 
   // 3. Callback de Google (redirige al frontend con token)
+  @Public()   // Ruta pública
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() req, @Res() res) {
