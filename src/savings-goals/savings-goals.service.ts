@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, ForbiddenException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SavingsGoal } from '../schemas/savings-goal.schema';
@@ -11,6 +11,9 @@ export class SavingsGoalsService {
     @InjectModel(SavingsGoal.name) private savingsGoalModel: Model<SavingsGoal>,
   ) {}
 
+  // ========== MÉTODOS CON FILTRO POR USUARIO ==========
+
+  // 1. Crear objetivo (el DTO ya contiene user_id)
   async create(createDto: CreateSavingsGoalDto) {
     // Si no se envía current_amount, se pone 0 por defecto
     if (createDto.current_amount === undefined) {
@@ -26,23 +29,25 @@ export class SavingsGoalsService {
     return newGoal.save();
   }
 
-  async findAll() {
-    return this.savingsGoalModel.find().exec();
+  // 2. Listar todos los objetivos de un usuario
+  async findAllByUser(userId: string) {
+    return this.savingsGoalModel.find({ user_id: userId }).exec();
   }
 
-  async findOne(id: string) {
-    const goal = await this.savingsGoalModel.findById(id).exec();
+  // 3. Obtener un objetivo por ID verificando propiedad
+  async findOneForUser(id: string, userId: string) {
+    const goal = await this.savingsGoalModel.findOne({ _id: id, user_id: userId }).exec();
     if (!goal) {
-      throw new NotFoundException(`Objetivo de ahorro con ID ${id} no encontrado`);
+      throw new NotFoundException('Objetivo de ahorro no encontrado o no pertenece al usuario');
     }
     return goal;
   }
 
-  async findByUser(user_id: string) {
-    return this.savingsGoalModel.find({ user_id }).exec();
-  }
+  // 4. Actualizar objetivo verificando propiedad
+  async updateForUser(id: string, updateDto: UpdateSavingsGoalDto, userId: string) {
+    // Primero verificar que el objetivo exista y pertenezca al usuario
+    await this.findOneForUser(id, userId);
 
-  async update(id: string, updateDto: UpdateSavingsGoalDto) {
     // Si se actualiza target_amount, verificar que current_amount no lo supere
     if (updateDto.target_amount !== undefined) {
       const goal = await this.savingsGoalModel.findById(id).exec();
@@ -56,20 +61,29 @@ export class SavingsGoalsService {
         }
       }
     }
+
     const updated = await this.savingsGoalModel
       .findByIdAndUpdate(id, updateDto, { new: true, runValidators: true })
       .exec();
     if (!updated) {
-      throw new NotFoundException(`Objetivo de ahorro con ID ${id} no encontrado`);
+      throw new NotFoundException('Objetivo de ahorro no encontrado');
     }
     return updated;
   }
 
-  async remove(id: string) {
+  // 5. Eliminar objetivo verificando propiedad
+  async removeForUser(id: string, userId: string) {
+    // Verificar que el objetivo exista y pertenezca al usuario
+    await this.findOneForUser(id, userId);
     const result = await this.savingsGoalModel.findByIdAndDelete(id).exec();
     if (!result) {
-      throw new NotFoundException(`Objetivo de ahorro con ID ${id} no encontrado`);
+      throw new NotFoundException('Objetivo de ahorro no encontrado');
     }
     return result;
+  }
+
+  // ========== MÉTODO AUXILIAR (para usar en savings-contributions) ==========
+  async findById(id: string) {
+    return this.savingsGoalModel.findById(id).exec();
   }
 }
