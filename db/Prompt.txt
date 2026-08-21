@@ -5,16 +5,10 @@ ME EQUIVOQUE EN REPETICION DE DEBTS indicar IA
 CONTINUACIÓN:
 En DEEKSEEK
 Implementación de seguridad para rutas JWT en las tablas mas importantes. 
-Sigo con debs:
-
 ✅ Siguientes módulos a actualizar
 Con este patrón claro, los siguientes módulos a actualizar son:
 
-debts (deudas) - muy similar, solo que no tiene categorías.
-debt-payments (pagos de deudas) - requiere verificar que la deuda sea del usuario.
-savings-goals (objetivos de ahorro) - similar a deudas.
-savings-contributions (contribuciones) - requiere verificar que el objetivo de ahorro sea del usuario.
-monthly-incomes (ingresos mensuales) - ya lo hiciste, pero verifica que esté igual.
+- monthly-incomes (ingresos mensuales) - ya lo hiciste, pero verifica que esté igual.
 
 GoogleCloud:
 https://console.cloud.google.com/apis/credentials?project=my-project-3997-1757347849982
