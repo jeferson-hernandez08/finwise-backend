@@ -8,8 +8,6 @@ Implementación de seguridad para rutas JWT en las tablas mas importantes.
 ✅ Siguientes módulos a actualizar
 Con este patrón claro, los siguientes módulos a actualizar son:
 
-- savings-goals (objetivos de ahorro) - similar a deudas.
-- savings-contributions (contribuciones) - requiere verificar que el objetivo de ahorro sea del usuario.
 - monthly-incomes (ingresos mensuales) - ya lo hiciste, pero verifica que esté igual.
 
 GoogleCloud:
