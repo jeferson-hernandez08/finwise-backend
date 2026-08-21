@@ -4,17 +4,12 @@ ME EQUIVOQUE EN REPETICION DE DEBTS indicar IA
 
 CONTINUACIÓN:
 En DEEKSEEK
-Implementación de seguridad para rutas JWT en las tablas mas importantes. 
-✅ Siguientes módulos a actualizar
-Con este patrón claro, los siguientes módulos a actualizar son:
 
-- monthly-incomes (ingresos mensuales) - ya lo hiciste, pero verifica que esté igual.
+-Pruebas de CRUD con este token JWWT
+- Siguiente Angular Frontend
+
+
 
 GoogleCloud:
 https://console.cloud.google.com/apis/credentials?project=my-project-3997-1757347849982
 
-Revisar Deekdeep : 
-1. src/auth/google.strategy.ts
-2. src/users/users.service.ts
-3. src/auth/auth.controller.ts
-4. src/auth/auth.module.ts
