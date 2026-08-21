@@ -13,8 +13,3 @@ Con este patrón claro, los siguientes módulos a actualizar son:
 GoogleCloud:
 https://console.cloud.google.com/apis/credentials?project=my-project-3997-1757347849982
 
-Revisar Deekdeep : 
-1. src/auth/google.strategy.ts
-2. src/users/users.service.ts
-3. src/auth/auth.controller.ts
-4. src/auth/auth.module.ts
