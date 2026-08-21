@@ -1,8 +1,9 @@
 import { IsMongoId, IsString, IsNumber, Min, Max, IsOptional, IsDateString, IsNotEmpty } from 'class-validator';
 
 export class CreateDebtDto {
+  @IsOptional() // 👈 Ahora opcional, se asigna en el controlador
   @IsMongoId({ message: 'user_id must be a valid MongoDB ObjectId' })
-  user_id: string;
+  user_id?: string;
 
   @IsString()
   @IsNotEmpty({ message: 'Name is required' })
@@ -29,5 +30,5 @@ export class CreateDebtDto {
 
   @IsOptional()
   @IsDateString()
-  due_date?: string; // ISO date string
+  due_date?: string;
 }

@@ -2,8 +2,9 @@ import { IsMongoId, IsString, IsNumber, Min, IsOptional, IsDate, IsNotEmpty } fr
 import { Type } from 'class-transformer';
 
 export class CreateSavingsGoalDto {
+  @IsOptional() // 👈 Ahora opcional, se asigna en el controlador
   @IsMongoId({ message: 'user_id debe ser un ObjectId válido' })
-  user_id: string;
+  user_id?: string;
 
   @IsString()
   @IsNotEmpty({ message: 'El nombre del objetivo es requerido' })
