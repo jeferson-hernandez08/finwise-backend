@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MonthlyIncome } from '../schemas/monthly-income.schema';
@@ -34,15 +34,21 @@ export class MonthlyIncomesService {
     return this.monthlyIncomeModel.find({ user_id: userId }).sort({ year: -1, month: -1 }).exec();
   }
 
-  // 3. Buscar ingreso por usuario, año y mes (útil para cálculos)
+  // 3. Buscar ingreso por usuario, año y mes (uso interno: lanza si no existe)
   async findByUserAndMonth(userId: string, year: number, month: number) {
-    const income = await this.monthlyIncomeModel.findOne({ user_id: userId, year, month }).exec();
+    const income = await this.findByUserAndMonthOrNull(userId, year, month);
     if (!income) {
       throw new NotFoundException(
         `No se encontró ingreso para el mes ${month} del año ${year}`
       );
     }
     return income;
+  }
+
+  // 3-bis. Igual que el anterior pero devuelve null: no registrar ingreso en un
+  // mes es lo normal, no un error, y así el frontend no recibe un 404.
+  async findByUserAndMonthOrNull(userId: string, year: number, month: number) {
+    return this.monthlyIncomeModel.findOne({ user_id: userId, year, month }).exec();
   }
 
   // 4. Obtener un ingreso por ID verificando propiedad
@@ -59,25 +65,34 @@ export class MonthlyIncomesService {
   // 5. Actualizar ingreso (verifica propiedad)
   async updateForUser(id: string, updateDto: UpdateMonthlyIncomeDto, userId: string) {
     // Verificar que el ingreso exista y pertenezca al usuario
-    await this.findOneForUser(id, userId);
+    const current = await this.findOneForUser(id, userId);
 
-    // Si se actualiza el año/mes, verificar que no haya conflicto de unicidad
+    // Si se actualiza el año/mes, verificar que no haya conflicto de unicidad.
+    // Hay que combinar el DTO con el documento actual: con `undefined` el filtro
+    // se ignora y la comprobación daba falsos positivos.
     if (updateDto.year !== undefined || updateDto.month !== undefined) {
+      const year = updateDto.year ?? current.year;
+      const month = updateDto.month ?? current.month;
       const existing = await this.monthlyIncomeModel.findOne({
         user_id: userId,
-        year: updateDto.year ?? undefined,
-        month: updateDto.month ?? undefined,
+        year,
+        month,
         _id: { $ne: id }, // Excluir el propio documento
       }).exec();
       if (existing) {
         throw new ConflictException(
-          `Ya existe un ingreso para el mes ${updateDto.month} del año ${updateDto.year}`
+          `Ya existe un ingreso para el mes ${month} del año ${year}`
         );
       }
     }
 
+    // user_id no se toca desde el cuerpo de la petición.
+    const { user_id: _ignored, ...fields } = updateDto;
     const updated = await this.monthlyIncomeModel
-      .findByIdAndUpdate(id, updateDto, { new: true, runValidators: true })
+      .findOneAndUpdate({ _id: id, user_id: userId }, fields, {
+        new: true,
+        runValidators: true,
+      })
       .exec();
     if (!updated) {
       throw new NotFoundException('Ingreso mensual no encontrado');
