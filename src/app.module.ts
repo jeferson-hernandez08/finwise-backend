@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config'; 
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -14,30 +14,14 @@ import { DebtPaymentsModule } from './debt-payments/debt-payments.module';
 import { SavingsGoalsModule } from './savings-goals/savings-goals.module';
 import { SavingsContributionsModule } from './savings-contributions/savings-contributions.module';
 import { ExpenseCategoriesModule } from './expense-categories/expense-categories.module';
-import { DashboardModule } from './dashboard/dashboard.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ // Carga el archivo .env
+    ConfigModule.forRoot({    // <-- Carga el archivo .env
       isGlobal: true,
     }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        const uri = configService.get<string>('MONGODB_URI');
-        if (!uri) {
-          // Preferimos fallar al arrancar antes que dejar credenciales en el codigo.
-          throw new Error(
-            'Falta la variable de entorno MONGODB_URI. ' +
-              'Copia .env.example a .env en la raiz de finwise-backend y ' +
-              'escribe ahi la cadena de conexion de MongoDB antes de arrancar la API.',
-          );
-        }
-        return { uri };
-      },
-    }),
+    MongooseModule.forRoot('mongodb+srv://jeferson_hernandez_finwiseapp:ASDasd.123@cluster0.ii0kln6.mongodb.net/finwise_db?retryWrites=true&w=majority'),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     UsersModule,
     MonthlyIncomesModule,
@@ -47,7 +31,6 @@ import { AuthModule } from './auth/auth.module';
     DebtPaymentsModule,
     SavingsGoalsModule,
     SavingsContributionsModule,
-    DashboardModule,
     AuthModule,
   ],
   controllers: [AppController],
@@ -56,7 +39,8 @@ import { AuthModule } from './auth/auth.module';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard, // Protegemos todas las rutas por defecto
-    },
+    }
+
   ],
 })
 export class AppModule {}

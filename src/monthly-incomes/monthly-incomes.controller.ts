@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, UseGuards, Query, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, UseGuards, Query } from '@nestjs/common';
 import { MonthlyIncomesService } from './monthly-incomes.service';
 import { CreateMonthlyIncomeDto } from './dto/create-monthly-income.dto';
 import { UpdateMonthlyIncomeDto } from './dto/update-monthly-income.dto';
@@ -21,21 +21,15 @@ export class MonthlyIncomesController {
     return this.monthlyIncomesService.findAllByUser(userId);
   }
 
-  // Devuelve null (200) cuando ese mes no tiene ingreso: es un estado normal.
   @Get('filter')
   findByMonthYear(
     @UserId() userId: string,
     @Query('year') year: string,
     @Query('month') month: string,
   ) {
-    const y = Number.parseInt(year, 10);
-    const m = Number.parseInt(month, 10);
-    if (!Number.isInteger(y) || !Number.isInteger(m) || m < 1 || m > 12) {
-      throw new BadRequestException(
-        'Los parámetros year y month son obligatorios (month entre 1 y 12)',
-      );
-    }
-    return this.monthlyIncomesService.findByUserAndMonthOrNull(userId, y, m);
+    const y = parseInt(year, 10);
+    const m = parseInt(month, 10);
+    return this.monthlyIncomesService.findByUserAndMonth(userId, y, m);
   }
 
   @Get(':id')
