@@ -1,21 +1,10 @@
-import {
-  IsDateString,
-  IsMongoId,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Min,
-  ValidateIf,
-} from 'class-validator';
+import { IsMongoId, IsNumber, Min, IsString, IsOptional, IsDateString } from 'class-validator';
 
 export class CreateExpenseDto {
-  // Opcional: el controlador lo sobrescribe con el id del token, y el
-  // ValidationPipe corre antes que el controlador.
-  @IsOptional()
-  @IsMongoId({ message: 'user_id debe ser un ObjectId válido' })
-  user_id?: string;
+  @IsMongoId()
+  user_id: string;
 
-  @IsMongoId({ message: 'category_id debe ser un ObjectId válido' })
+  @IsMongoId()
   category_id: string;
 
   @IsString()
@@ -26,11 +15,10 @@ export class CreateExpenseDto {
   @Min(0)
   amount: number;
 
-  @IsDateString({}, { message: 'La fecha debe tener formato YYYY-MM-DD' })
+  @IsDateString()
   date: string; // formato YYYY-MM-DD
 
-  // El frontend envía debt_id: null cuando el gasto no paga ninguna deuda.
-  @ValidateIf((o) => o.debt_id !== null && o.debt_id !== undefined)
-  @IsMongoId({ message: 'debt_id debe ser un ObjectId válido' })
-  debt_id?: string | null;
+  @IsMongoId()
+  @IsOptional()
+  debt_id?: string; // opcional
 }

@@ -4,28 +4,34 @@ import { Model } from 'mongoose';
 import { User } from '../schemas/user.schema';
 import * as bcrypt from 'bcrypt';
 
-/** Campos que nunca deben salir de la API. */
-const WITHOUT_PASSWORD = '-password_hash -__v';
-
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  // ========== Lectura segura (lo que se expone por HTTP) ==========
+  // ========== CRUD genérico (para el controlador) ==========
+  async create(createUserDto: any): Promise<User> {
+    const newUser = new this.userModel(createUserDto);
+    return newUser.save();
+  }
 
-  // Perfil del usuario sin el hash de la contrasena
-  async findProfile(id: string): Promise<User | null> {
-    return this.userModel.findById(id).select(WITHOUT_PASSWORD).exec();
+  async findAll(): Promise<User[]> {
+    return this.userModel.find().exec();
+  }
+
+  async findOne(id: string): Promise<User | null> {
+    return this.userModel.findById(id).exec();
+  }
+
+  async update(id: string, updateUserDto: any): Promise<User | null> {
+    return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true }).exec();
+  }
+
+  async remove(id: string): Promise<User | null> {
+    return this.userModel.findByIdAndDelete(id).exec();
   }
 
   // ========== Métodos específicos para autenticación ==========
-  // Buscar por id (uso interno: validación del token)
-  async findOne(id: string): Promise<User | null> {
-    return this.userModel.findById(id).select(WITHOUT_PASSWORD).exec();
-  }
-
-  // Buscar por email (devuelve null si no existe). Incluye password_hash
-  // porque lo usa la validación de credenciales; no se expone nunca tal cual.
+  // Buscar por email (devuelve null si no existe)
   async findByEmail(email: string): Promise<User | null> {
     return this.userModel.findOne({ email }).exec();
   }
@@ -68,4 +74,5 @@ export class UsersService {
     }
     return null;
   }
+
 }
