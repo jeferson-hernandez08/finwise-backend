@@ -1,8 +1,9 @@
 import { IsMongoId, IsNumber, Min, IsString, IsOptional, IsDateString } from 'class-validator';
 
 export class CreateExpenseDto {
+  @IsOptional()
   @IsMongoId()
-  user_id: string;
+  user_id?: string;    // El signo de interrogación lo hacemos opcional en TypeScript
 
   @IsMongoId()
   category_id: string;
