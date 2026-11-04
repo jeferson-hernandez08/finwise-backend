@@ -11,11 +11,17 @@ export class AuthService {
 
   async signIn(email: string, password: string) {
     const user = await this.usersService.validateCredentials(email, password);
-    if (!user) {
-      throw new UnauthorizedException('Credenciales inválidas');
-    }
+    if (!user) throw new UnauthorizedException('Credenciales inválidas');
 
-    const payload = { sub: user.id, email: user.email };
+    // 👇 Extraemos el nombre del rol (ya que hicimos populate)
+    const roleName = (user.role_id as any).name; 
+
+    const payload = { 
+      sub: user.id, 
+      email: user.email, 
+      role: roleName // Guardamos 'admin' o 'user'
+    };
+    
     return {
       access_token: await this.jwtService.signAsync(payload),
     };

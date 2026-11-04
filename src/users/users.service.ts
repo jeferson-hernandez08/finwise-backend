@@ -67,8 +67,10 @@ export class UsersService {
   }
 
   // Validar credenciales (para login con email/password)
-  async validateCredentials(email: string, password: string): Promise<User | null> {
-    const user = await this.findByEmail(email);
+  async validateCredentials(email: string, password: string): Promise<any> {
+    // populate('role_id') reemplaza el ID por el documento completo del rol
+    const user = await this.userModel.findOne({ email }).populate('role_id').exec();
+    
     if (user && user.password_hash && await bcrypt.compare(password, user.password_hash)) {
       return user;
     }
