@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { User, UserSchema } from './schemas/user.schema';
+import { Role, RoleSchema } from './schemas/role.schema'; 
 import { UsersModule } from './users/users.module';
 import { MonthlyIncomesModule } from './monthly-incomes/monthly-incomes.module';
 import { ExpensesModule } from './expenses/expenses.module';
@@ -15,6 +16,7 @@ import { SavingsGoalsModule } from './savings-goals/savings-goals.module';
 import { SavingsContributionsModule } from './savings-contributions/savings-contributions.module';
 import { ExpenseCategoriesModule } from './expense-categories/expense-categories.module';
 import { AuthModule } from './auth/auth.module';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
   imports: [
@@ -22,8 +24,12 @@ import { AuthModule } from './auth/auth.module';
       isGlobal: true,
     }),
     MongooseModule.forRoot('mongodb+srv://jeferson_hernandez_finwiseapp:ASDasd.123@cluster0.ii0kln6.mongodb.net/finwise_db?retryWrites=true&w=majority'),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: Role.name, schema: RoleSchema }
+    ]),
     UsersModule,
+    RolesModule,
     MonthlyIncomesModule,
     DebtsModule,
     ExpensesModule,
