@@ -15,7 +15,7 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
-    return this.userModel.find().exec();
+    return this.userModel.find().populate('role_id').exec();
   }
 
   async findOne(id: string): Promise<User | null> {
@@ -37,12 +37,13 @@ export class UsersService {
   }
 
   // Crear usuario con contraseña (para registro con email/password)
-  async createWithPassword(email: string, password: string, fullName: string): Promise<User> {
+  async createWithPassword(email: string, password: string, fullName: string, roleId: string): Promise<User> {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new this.userModel({
       email,
       password_hash: hashedPassword,
       full_name: fullName,
+      role_id: roleId, // Asignamos el rol
     });
     return newUser.save();
   }
