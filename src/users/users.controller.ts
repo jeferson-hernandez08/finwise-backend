@@ -3,16 +3,16 @@ import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Req } from 
 import { UsersService } from './users.service';
 import { User } from '../schemas/user.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { RolesGuard } from '../auth/roles.guard'; // 👈 Importamos
-import { Roles } from '../decorators/roles.decorator'; // 👈 Importamos
+import { RolesGuard } from '../auth/roles.guard'; 
+import { Roles } from '../decorators/roles.decorator'; 
 
 @Controller('users')
-@UseGuards(JwtAuthGuard, RolesGuard) // 👈 Protegemos todo el controlador
+@UseGuards(JwtAuthGuard, RolesGuard) // Protegemos todo el controlador
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @Roles('admin') // 👈 Solo el admin crea
+  @Roles('admin') // Solo el admin crea
   create(@Body() createUserDto: any): Promise<User> {
     // Usamos el método que encripta la contraseña y recibe el rol
     return this.usersService.createWithPassword(
@@ -24,7 +24,7 @@ export class UsersController {
   }
 
   @Get()
-  @Roles('admin') // 👈 Solo el admin lista
+  @Roles('admin') // Solo el admin lista
   findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
