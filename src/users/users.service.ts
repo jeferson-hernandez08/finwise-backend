@@ -19,7 +19,7 @@ export class UsersService {
   }
 
   async findOne(id: string): Promise<User | null> {
-    return this.userModel.findById(id).exec();
+    return this.userModel.findById(id).populate('role_id').exec();
   }
 
   async update(id: string, updateUserDto: any): Promise<User | null> {
